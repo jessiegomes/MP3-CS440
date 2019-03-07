@@ -94,6 +94,7 @@ if __name__ == '__main__':
     feature_dim = len(x_train[0]) 
     num_value = 256
     NB = NaiveBayes(num_class,feature_dim,num_value)
+    print(len(y_train))
     # Train model.
     NB.train(x_train,y_train)
     # Feature likelihood for high intensity pixels. 

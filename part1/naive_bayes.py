@@ -37,7 +37,24 @@ class NaiveBayes(object):
 		"""
 
 		# YOUR CODE HERE
-		pass
+		for feature in range(0, self.feature_dim):
+			for pixel_val in range(0, self.num_value):
+				curr_val = 0
+				total_val = 0
+				for category in range(0, self.num_class):
+					for image in range(0, len(train_set)):
+						if train_set[image][feature] == pixel_val and train_label[image] == category:
+							curr_val += 1
+							total_val += 1
+						if train_label[image] == category:
+							total_val += 1
+					prob = curr_val/total_val
+					if prob > 0:
+						self.likelihood[feature][pixel_val][category] = prob
+					else:
+						self.likelihood[feature][pixel_val][category] = (curr_val+1)/(total_val+1)
+					self.prior[category] = total_val/len(train_label)
+
 
 	def test(self,test_set,test_label):
 		""" Test the trained naive bayes model (self.prior and self.likelihood) on testing dataset,

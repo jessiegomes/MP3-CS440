@@ -37,15 +37,13 @@ class NaiveBayes(object):
 		"""
 
 		# YOUR CODE HERE
-		for i in range(0, self.num_class):
-			self.prior[i] = np.sum(train_label==i)/float(train_label.shape[0]) 
-
 		for picture in range(0, len(train_set)):
 			for pix_index, pixel in enumerate(train_set[picture]):
 				self.likelihood[pix_index][pixel][train_label[picture]] += 1
 
 		K = 1
 		for c in range(0, self.num_class):
+			self.prior[c] = np.sum(train_label==c)/float(train_label.shape[0]) 
 			self.likelihood[:,:,c] = (self.likelihood[:,:,c] + K) / ((K*self.num_value) + (self.prior[c] * len(train_set)))
 		# print(self.likelihood)
 		print(self.likelihood[230][201][0])

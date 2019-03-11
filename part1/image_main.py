@@ -94,9 +94,9 @@ if __name__ == '__main__':
     feature_dim = len(x_train[0]) 
     num_value = 256
     NB = NaiveBayes(num_class,feature_dim,num_value)
-    print(len(y_train))
     # Train model.
     NB.train(x_train,y_train)
+    print("finished training")
     # Feature likelihood for high intensity pixels. 
     feature_likelihoods = NB.intensity_feature_likelihoods(NB.likelihood)
     # Visualize the feature likelihoods for high intensity pixels. 
@@ -105,6 +105,7 @@ if __name__ == '__main__':
     plot_visualization(feature_likelihoods, class_names, "Greys")
     # Classify the test sets. 
     accuracy, y_pred = NB.test(x_test,y_test)
+    print("finished testing")
     # Plot confusion matrix. 
     plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
                       title='Confusion matrix, with normalization')

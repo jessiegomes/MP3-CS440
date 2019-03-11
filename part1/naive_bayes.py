@@ -37,23 +37,18 @@ class NaiveBayes(object):
 		"""
 
 		# YOUR CODE HERE
-		for feature in range(0, self.feature_dim):
-			for pixel_val in range(0, self.num_value):
-				curr_val = 0
-				total_val = 0
-				for category in range(0, self.num_class):
-					for image in range(0, len(train_set)):
-						if train_set[image][feature] == pixel_val and train_label[image] == category:
-							curr_val += 1
-							total_val += 1
-						if train_label[image] == category:
-							total_val += 1
-					prob = curr_val/total_val
-					if prob > 0:
-						self.likelihood[feature][pixel_val][category] = prob
-					else:
-						self.likelihood[feature][pixel_val][category] = (curr_val+1)/(total_val+1)
-					self.prior[category] = total_val/len(train_label)
+		for i in range(0, self.num_class):
+			self.prior[i] = np.sum(train_label==i)/float(train_label.shape[0]) 
+
+		for picture in range(0, len(train_set)):
+			for pix_index, pixel in enumerate(train_set[picture]):
+				self.likelihood[pix_index][pixel][train_label[picture]] += 1
+
+		K = 1
+		for c in range(0, self.num_class):
+			self.likelihood[:,:,c] = (self.likelihood[:,:,c] + K) / ((K*self.num_value) + (self.prior[c] * len(train_set)))
+		# print(self.likelihood)
+		print(self.likelihood[230][201][0])
 
 
 	def test(self,test_set,test_label):
@@ -72,11 +67,22 @@ class NaiveBayes(object):
 		"""    
 
 		# YOUR CODE HERE
-
-		accuracy = 0
 		pred_label = np.zeros((len(test_set)))
+		accuracy = 0
 
-		pass
+		for image in test_set:
+			prob_per_class = []
+			for category in range(0, self.num_class):
+				prob = 1
+				for pix_index in range(0, len(train_set[image])):
+					prob += log(self.likelihood[pix_index][image[pix_index]][category])
+				prob_per_class[i] = prob
+			label = values.index(max(prob_per_class))
+			pred_label[test_set.index(image)] = label
+			if label == test_label[test_set.index(image)]:
+				accuracy += 1
+
+		accuracy = accuracy/len(test_set)
 
 		return accuracy, pred_label
 

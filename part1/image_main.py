@@ -7,6 +7,7 @@ from naive_bayes import NaiveBayes
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 from sklearn.utils.multiclass import unique_labels
+import time
 
 def load_dataset(data_dir=''):
     """Load the train and test examples 
@@ -95,17 +96,19 @@ if __name__ == '__main__':
     num_value = 256
     NB = NaiveBayes(num_class,feature_dim,num_value)
     # Train model.
+    start_time = time.time()
     NB.train(x_train,y_train)
-    print("finished training")
     # Feature likelihood for high intensity pixels. 
     feature_likelihoods = NB.intensity_feature_likelihoods(NB.likelihood)
-    # Visualize the feature likelihoods for high intensity pixels. 
+    # # Visualize the feature likelihoods for high intensity pixels. 
     class_names = np.array(["T-shirt/top","Trouser","Pullover","Dress",
         "Coat","Sandal","Shirt","Sneaker","Bag","Ankle boot"])
     plot_visualization(feature_likelihoods, class_names, "Greys")
     # Classify the test sets. 
     accuracy, y_pred = NB.test(x_test,y_test)
-    print("finished testing")
+    print(accuracy)
+    end_time = time.time()
+    print(end_time - start_time)
     # Plot confusion matrix. 
     plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
                       title='Confusion matrix, with normalization')

@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 class NaiveBayes(object):
 	def __init__(self,num_class,feature_dim,num_value):
@@ -45,8 +46,9 @@ class NaiveBayes(object):
 		for c in range(0, self.num_class):
 			self.prior[c] = np.sum(train_label==c)/float(train_label.shape[0]) 
 			self.likelihood[:,:,c] = (self.likelihood[:,:,c] + K) / ((K*self.num_value) + (self.prior[c] * len(train_set)))
+
 		# print(self.likelihood)
-		print(self.likelihood[230][201][0])
+		# print(self.likelihood[230][201][0])
 
 
 	def test(self,test_set,test_label):
@@ -67,20 +69,19 @@ class NaiveBayes(object):
 		# YOUR CODE HERE
 		pred_label = np.zeros((len(test_set)))
 		accuracy = 0
-
-		for image in test_set:
-			prob_per_class = []
+		for idx, image in enumerate(test_set):
+			class_probs = np.zeros(self.num_class)
 			for category in range(0, self.num_class):
-				prob = 1
-				for pix_index in range(0, len(train_set[image])):
-					prob += log(self.likelihood[pix_index][image[pix_index]][category])
-				prob_per_class[i] = prob
-			label = values.index(max(prob_per_class))
-			pred_label[test_set.index(image)] = label
-			if label == test_label[test_set.index(image)]:
+				curr_prob = 0
+				for pix_index in range(0, len(test_set[image])):
+					curr_prob += math.log(self.likelihood[pix_index][image[pix_index]][category])
+				curr_prob += math.log(self.prior[category])
+				class_probs[category] = curr_prob
+			pred_label[idx] = np.argmax(class_probs)
+			if pred_label[idx] == test_label[idx]:
 				accuracy += 1
 
-		accuracy = accuracy/len(test_set)
+		accuracy /= len(test_set)
 
 		return accuracy, pred_label
 
@@ -116,5 +117,7 @@ class NaiveBayes(object):
 	    # YOUR CODE HERE
 	    
 	    feature_likelihoods = np.zeros((likelihood.shape[0],likelihood.shape[2]))
+	    for c in range(0, self.num_class):
+		    feature_likelihoods[:,c] = np.sum(self.likelihood[:,128:256,c], axis=1)
 
 	    return feature_likelihoods

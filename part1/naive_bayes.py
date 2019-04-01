@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 class NaiveBayes(object):
 	def __init__(self,num_class,feature_dim,num_value):
@@ -24,7 +23,11 @@ class NaiveBayes(object):
 
 		self.prior = np.zeros((num_class))
 		self.likelihood = np.zeros((feature_dim,num_value,num_class))
-
+		self.highest_posterior_prob = np.array([float('-inf'), float('-inf'), float('-inf'),float('-inf'),float('-inf'),float('-inf'),float('-inf'),float('-inf'),float('-inf'),float('-inf')])
+		self.highest_pic_index = np.zeros(num_class)
+		self.lowest_posterior_prob = np.array([float('inf'), float('inf'), float('inf'),float('inf'),float('inf'),float('inf'),float('inf'),float('inf'),float('inf'),float('inf')])
+		self.lowest_pic_index = np.zeros(num_class)
+	
 	def train(self,train_set,train_label):
 		""" Train naive bayes model (self.prior and self.likelihood) with training dataset. 
 			self.prior(numpy.ndarray): training set class prior (in log) with a dimension of (# of class,),
@@ -49,6 +52,7 @@ class NaiveBayes(object):
 
 		# print(self.likelihood)
 		# print(self.likelihood[230][201][0])
+		# print(self.likelihood[234][245])
 
 
 	def test(self,test_set,test_label):
@@ -74,16 +78,22 @@ class NaiveBayes(object):
 			for category in range(0, self.num_class):
 				curr_prob = 0
 				for pix_index in range(0, len(test_set[image])):
-					curr_prob += math.log(self.likelihood[pix_index][image[pix_index]][category])
-				curr_prob += math.log(self.prior[category])
+					curr_prob += np.log(self.likelihood[pix_index][image[pix_index]][category])
+				curr_prob += np.log(self.prior[category])
 				class_probs[category] = curr_prob
 			pred_label[idx] = np.argmax(class_probs)
 			if pred_label[idx] == test_label[idx]:
 				accuracy += 1
+			if class_probs[test_label[idx]] < self.lowest_posterior_prob[test_label[idx]]:
+				self.lowest_posterior_prob[test_label[idx]] = class_probs[test_label[idx]]
+				self.lowest_pic_index[test_label[idx]] = idx
+			if class_probs[test_label[idx]] > self.highest_posterior_prob[test_label[idx]]:
+				self.highest_posterior_prob[test_label[idx]] = class_probs[test_label[idx]]
+				self.highest_pic_index[test_label[idx]] = idx
 
 		accuracy /= len(test_set)
 
-		return accuracy, pred_label
+		return self.lowest_pic_index, self.highest_pic_index, accuracy, pred_label
 
 
 	def save_model(self, prior, likelihood):

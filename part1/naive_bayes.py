@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 class NaiveBayes(object):
 	def __init__(self,num_class,feature_dim,num_value):
@@ -92,10 +93,24 @@ class NaiveBayes(object):
 				self.highest_pic_index[test_label[idx]] = idx
 
 		accuracy /= len(test_set)
+		print("Highest", self.highest_pic_index)
+		print("Lowest", self.lowest_pic_index)
+		return accuracy, pred_label
 
-		return self.lowest_pic_index, self.highest_pic_index, accuracy, pred_label
+	def display_highest_posterior_prob_images(self, test_set, test_label):
+		for i in self.highest_pic_index:
+			pic = test_set[int(i)]
+			pic = np.reshape(pic, (28,28))
+			plt.imshow(pic, cmap='gray')
+			plt.show()
 
-
+	def display_lowest_posterior_prob_images(self, test_set, test_label):
+		for i in self.lowest_pic_index:
+			pic = test_set[int(i)]
+			pic = np.reshape(pic, (28,28))
+			plt.imshow(pic, cmap='gray')
+			plt.show()
+	
 	def save_model(self, prior, likelihood):
 		""" Save the trained model parameters 
 		"""    

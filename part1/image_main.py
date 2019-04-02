@@ -89,51 +89,52 @@ if __name__ == '__main__':
     # Load dataset. 
     x_train, y_train, x_test, y_test = load_dataset()
 
-    plt.imshow(x_test[0][0:784], cmap='gray')
-    plt.show()
+    # plt.imshow(x_test[0][0:784], cmap='gray')
+    # plt.show()
     # Initialize naive bayes model.
-    # num_class = len(np.unique(y_train))
-    # feature_dim = len(x_train[0]) 
-    # num_value = 256
+    num_class = len(np.unique(y_train))
+    feature_dim = len(x_train[0]) 
+    num_value = 256
     # NB = NaiveBayes(num_class,feature_dim,num_value)
-    # # Train model.
+    # Train model.
     # start_time = time.time()
     # NB.train(x_train,y_train)
     # train_time = time.time()
     # print(train_time - start_time)
-    # # Feature likelihood for high intensity pixels. 
-    # # feature_likelihoods = NB.intensity_feature_likelihoods(NB.likelihood)
-    # # # # Visualize the feature likelihoods for high intensity pixels. 
-    # # class_names = np.array(["T-shirt/top","Trouser","Pullover","Dress",
-    # #     "Coat","Sandal","Shirt","Sneaker","Bag","Ankle boot"])
-    # # plot_visualization(feature_likelihoods, class_names, "Greys")
-    # # Classify the test sets. 
+    # Feature likelihood for high intensity pixels. 
+    # feature_likelihoods = NB.intensity_feature_likelihoods(NB.likelihood)
+    # # # Visualize the feature likelihoods for high intensity pixels. 
+    class_names = np.array(["T-shirt/top","Trouser","Pullover","Dress", "Coat","Sandal","Shirt","Sneaker","Bag","Ankle boot"])
+    # plot_visualization(feature_likelihoods, class_names, "Greys")
+    # Classify the test sets. 
     # lowest, highest, accuracy, y_pred = NB.test(x_test,y_test)
     # print(accuracy)
     # end_time = time.time()
     # print(end_time - start_time)
-    # # Plot confusion matrix. 
-    # # plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
-    #                   # title='Confusion matrix, with normalization')
-    # # plt.show()
+    # Plot confusion matrix. 
+    # plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
+                      # title='Confusion matrix, with normalization')
+    # plt.show()
     # print(lowest)
     # print(highest)
     # for i in range(0, len(lowest)):
     #     plt.imshow(x_test[lowest[i]], cmap='gray')
     #     plt.show()
-    # # for i in highest:
-    # #     plt.imshow(x_test[i], cmap='gray')
-    # #     plt.show()
-    # # Initialize perceptron model. 
-    # perceptron = MultiClassPerceptron(num_class,feature_dim)
-    # # Train model.
-    # perceptron.train(x_train,y_train)
-    # # Visualize the learned perceptron weights. 
-    # plot_visualization(perceptron.w[:-1,:], class_names, None)
-    # # Classify the test sets. 
-    # accuracy, y_pred = perceptron.test(x_test,y_test)
-    # print("Accuracy: ", accuracy)
-    # # Plot confusion matrix.
-    # plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
-    #                   title='Confusion matrix, with normalization')
-    # plt.show()    
+    # for i in highest:
+    #     plt.imshow(x_test[i], cmap='gray')
+    #     plt.show()
+    # Initialize perceptron model. 
+    perceptron = MultiClassPerceptron(num_class,feature_dim)
+    # Train model.
+    perceptron.train(x_train,y_train)
+    # Visualize the learned perceptron weights. 
+    plot_visualization(perceptron.w[:-1,:], class_names, None)
+    # Classify the test sets. 
+    accuracy, y_pred = perceptron.test(x_test,y_test)
+    print("Accuracy: ", accuracy)
+    # Plot confusion matrix.
+    plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
+                      title='Confusion matrix, with normalization')
+    plt.show()
+    perceptron.high_class_posterior_probs(x_test, y_test)
+    perceptron.low_class_posterior_probs(x_test, y_test)

@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 class MultiClassPerceptron(object):
 	def __init__(self,num_class,feature_dim):
@@ -89,18 +90,16 @@ class MultiClassPerceptron(object):
 				accuracy += 1
 		
 		print(accuracy/len(test_label))
-		pass
 		return accuracy/len(test_label), pred_label
+
 
 	def save_model(self, weight_file):
 		""" Save the trained model parameters 
 		""" 
-
 		np.save(weight_file,self.w)
 
 	def load_model(self, weight_file):
 		""" Load the trained model parameters 
 		""" 
-
 		self.w = np.load(weight_file)
 

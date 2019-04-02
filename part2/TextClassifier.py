@@ -27,8 +27,10 @@ class TextClassifier(object):
         self.num_class = 14
         self.prior = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.likelihood = []
+        self.bigram_likelihood = []
         self.classes = ["Company", "EducationalInstitution", "Artist", "Athlete", "OfficeHolder", "MeanOfTransportation", "Building", "NaturalPlace", "Village", "Animal", "Plant", "Album", "Film", "WrittenWork"]
         self.top_feature_words = []
+
     def fit(self, train_set, train_label):
         """
         :param train_set - List of list of words corresponding with each text
@@ -44,6 +46,7 @@ class TextClassifier(object):
         for i in range(0, self.num_class): 
             diction = {}
             self.likelihood.append(diction)
+            self.bigram_likelihood.append(diction)
 
         for idx, sentence in enumerate(train_set):
             self.prior[train_label[idx] - 1] += 1
@@ -55,13 +58,30 @@ class TextClassifier(object):
                     self.likelihood[train_label[idx] - 1][word] = 1
                 else:
                     self.likelihood[train_label[idx] - 1][word] += 1
+
+        for idx, sentence in enumerate(train_set):
+            for i in range(0, len(sentence)):
+                for j in range(i+1, len(sentence)):
+                    init_tup = (sentence[i], sentence[j])
+                    sort_tup = sorted(init_tup)
+                    tup = (sort_tup[0], sort_tup[1])
+                    for group in range(0, self.num_class):
+                        if tup not in self.bigram_likelihood[group]:
+                            self.bigram_likelihood[group][tup] = 0
+                    if tup not in self.bigram_likelihood[train_label[idx] - 1]:
+                        self.bigram_likelihood[train_label[idx] - 1][tup] = 1
+                    else:
+                        self.bigram_likelihood[train_label[idx] - 1][tup] += 1
         
         self.prior = [i/len(train_set) for i in self.prior]
 
         for idx, class_dict in enumerate(self.likelihood):
             for key in class_dict:
-                class_dict[key] = (class_dict[key] + self.laplace)/((self.laplace*len(class_dict.keys())) + (self.prior[idx]*len(train_set)))
+                class_dict[key] = (class_dict[key] + self.laplace)/((self.laplace*sum(class_dict.values())) + (self.prior[idx]*len(train_set)))
 
+        for idx, class_dict in enumerate(self.bigram_likelihood):
+            for key in class_dict:
+                class_dict[key] = (class_dict[key] + self.laplace)/((self.laplace*sum(class_dict.values())) + (self.prior[idx]*len(train_set)))
 
     def predict(self, x_set, dev_label,lambda_mix=0.0):
         """
@@ -81,20 +101,79 @@ class TextClassifier(object):
         # TODO: Write your code here
         for idx, sentence in enumerate(x_set):
             class_probs = []
+            uni_probs = []
+            bi_probs = []
             for category in range(0, self.num_class):
                 curr_prob = 0
-                for word in sentence:
+                mix_prob = 0
+                for word in range(0, len(sentence)):
                     if word in self.likelihood[category]:
                         curr_prob += math.log(self.likelihood[category][word])
+                    for word2 in range(word+1, len(sentence)):
+                        init_tup = (sentence[word], sentence[word2])
+                        sort_tup = sorted(init_tup)
+                        tup = (sort_tup[0], sort_tup[1])
+                        if tup in self.bigram_likelihood[category]:
+                            mix_prob += math.log(self.bigram_likelihood[category][tup])
+                curr_prob += math.log(self.prior[category])
+                mix_prob += math.log(self.prior[category])
+                uni_probs.append(curr_prob)
+                bi_probs.append(mix_prob)
+                class_probs.append((uni_probs[category]*(1-self.lambda_mixture)) + (bi_probs[category]*(self.lambda_mixture)))
+            result.append(class_probs.index(max(class_probs)) + 1)
+            if dev_label[idx] == result[idx]:
+                accuracy += 1
+        # print(self.top_feature_words)
+        accuracy /= len(x_set)
+        return accuracy, result
+
+    def bigram_fit(self, train_set, train_label):
+        for i in range(0, self.num_class): 
+            diction = {}
+            self.likelihood.append(diction)
+
+        for idx, sentence in enumerate(train_set):
+            self.prior[train_label[idx] - 1] += 1
+            for i in range(0, len(sentence) - 1):
+                for j in range(i+1, len(sentence)):
+                    init_tup = (sentence[i], sentence[j])
+                    sort_tup = sorted(init_tup)
+                    tup = (sort_tup[0], sort_tup[1])
+                    for group in range(0, self.num_class):
+                        if tup not in self.likelihood[group]:
+                            self.likelihood[group][tup] = 0
+                    if tup not in self.likelihood[train_label[idx] - 1]:
+                        self.likelihood[train_label[idx] - 1][tup] = 1
+                    else:
+                        self.likelihood[train_label[idx] - 1][tup] += 1
+            
+        self.prior = [i/len(train_set) for i in self.prior]
+
+        for idx, class_dict in enumerate(self.likelihood):
+            for key in class_dict:
+                class_dict[key] = (class_dict[key] + self.laplace)/((self.laplace*len(class_dict.keys())) + (self.prior[idx]*len(train_set)))
+
+    def bigram_predict(self, x_set, dev_label,lambda_mix=0.0):
+        accuracy = 0.0
+        result = []
+
+        # TODO: Write your code here
+        for idx, sentence in enumerate(x_set):
+            class_probs = []
+            for category in range(0, self.num_class):
+                curr_prob = 0
+                for i in range(0, len(sentence) - 1):
+                    for j in range(i+1, len(sentence)):
+                        init_tup = (sentence[i], sentence[j])
+                        sort_tup = sorted(init_tup)
+                        tup = (sort_tup[0], sort_tup[1])
+                        if tup in self.likelihood[category]:
+                            curr_prob += math.log(self.likelihood[category][tup])
                 curr_prob += math.log(self.prior[category])
                 class_probs.append(curr_prob)
             result.append(class_probs.index(max(class_probs)) + 1)
             if dev_label[idx] == result[idx]:
                 accuracy += 1
-        for i in range(0, self.num_class):
-            curr_dict = self.likelihood[i]
-            curr_dict = sorted(curr_dict, key=curr_dict.get, reverse=True)[:20]
-            self.top_feature_words.append(curr_dict)
         # print(self.top_feature_words)
         accuracy /= len(x_set)
         return accuracy, result

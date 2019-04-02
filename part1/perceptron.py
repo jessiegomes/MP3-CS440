@@ -92,6 +92,44 @@ class MultiClassPerceptron(object):
 		print(accuracy/len(test_label))
 		return accuracy/len(test_label), pred_label
 
+	def high_class_posterior_probs(self, test_set, test_label):
+		images = []
+		sums = []
+		curr_sum = 0
+		for class_idx in range(self.w.shape[1]):
+			for image_idx in range(len(test_set)):
+				image = np.append(test_set[image_idx], 0)
+				images.append(test_set[image_idx])
+				curr_sum = np.dot(image, self.w[:, class_idx])
+				if class_idx == test_label[image_idx]:
+					sums.append(curr_sum)
+				curr_sum = 0
+			im = images[np.argmax(sums)]
+			im = np.reshape(im, (28, 28))
+			plt.imshow(im)
+			plt.show()
+			images = []
+			sums = []
+			curr_sum = 0
+	def low_class_posterior_probs(self, test_set, test_label):
+		images = []
+		sums = []
+		curr_sum = 0
+		for class_idx in range(self.w.shape[1]):
+			for image_idx in range(len(test_set)):
+				image = np.append(test_set[image_idx], 0)
+				images.append(test_set[image_idx])
+				curr_sum = np.dot(image, self.w[:, class_idx])
+				if class_idx == test_label[image_idx]:
+					sums.append(curr_sum)
+				curr_sum = 0
+			im = images[np.argmin(sums)]
+			im = np.reshape(im, (28, 28))
+			plt.imshow(im)
+			plt.show()
+			images = []
+			sums = []
+			curr_sum = 0
 
 	def save_model(self, weight_file):
 		""" Save the trained model parameters 

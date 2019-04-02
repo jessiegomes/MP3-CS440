@@ -109,7 +109,7 @@ if __name__ == '__main__':
     plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
                       title='Confusion matrix, with normalization')
     plt.show()    
-    
+
     # Initialize perceptron model. 
     perceptron = MultiClassPerceptron(num_class,feature_dim)
     # Train model.
@@ -123,5 +123,3 @@ if __name__ == '__main__':
     plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
                       title='Confusion matrix, with normalization')
     plt.show()
-    perceptron.high_class_posterior_probs(x_test, y_test)
-    perceptron.low_class_posterior_probs(x_test, y_test)

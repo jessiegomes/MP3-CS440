@@ -89,29 +89,30 @@ if __name__ == '__main__':
     # Load dataset. 
     x_train, y_train, x_test, y_test = load_dataset()
 
-    plt.imshow(x_test[0][0:784], cmap='gray')
-    plt.show()
+
     # Initialize naive bayes model.
-    # num_class = len(np.unique(y_train))
-    # feature_dim = len(x_train[0]) 
-    # num_value = 256
-    # NB = NaiveBayes(num_class,feature_dim,num_value)
+    num_class = len(np.unique(y_train))
+    feature_dim = len(x_train[0]) 
+    num_value = 256
+    NB = NaiveBayes(num_class,feature_dim,num_value)
     # # Train model.
-    # start_time = time.time()
-    # NB.train(x_train,y_train)
-    # train_time = time.time()
-    # print(train_time - start_time)
+    start_time = time.time()
+    NB.train(x_train,y_train)
+    train_time = time.time()
+    print(train_time - start_time)
     # # Feature likelihood for high intensity pixels. 
-    # # feature_likelihoods = NB.intensity_feature_likelihoods(NB.likelihood)
+    # feature_likelihoods = NB.intensity_feature_likelihoods(NB.likelihood)
     # # # # Visualize the feature likelihoods for high intensity pixels. 
     # # class_names = np.array(["T-shirt/top","Trouser","Pullover","Dress",
     # #     "Coat","Sandal","Shirt","Sneaker","Bag","Ankle boot"])
     # # plot_visualization(feature_likelihoods, class_names, "Greys")
     # # Classify the test sets. 
-    # lowest, highest, accuracy, y_pred = NB.test(x_test,y_test)
-    # print(accuracy)
-    # end_time = time.time()
-    # print(end_time - start_time)
+    accuracy, y_pred = NB.test(x_test,y_test)
+    NB.display_highest_posterior_prob_images(x_test, y_test)
+    NB.display_lowest_posterior_prob_images(x_test, y_test)
+    print("Accuracy:", accuracy)
+    end_time = time.time()
+    print(end_time - start_time)
     # # Plot confusion matrix. 
     # # plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
     #                   # title='Confusion matrix, with normalization')

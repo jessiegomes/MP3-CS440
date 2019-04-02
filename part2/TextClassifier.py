@@ -28,7 +28,7 @@ class TextClassifier(object):
         self.prior = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.likelihood = []
         self.classes = ["Company", "EducationalInstitution", "Artist", "Athlete", "OfficeHolder", "MeanOfTransportation", "Building", "NaturalPlace", "Village", "Animal", "Plant", "Album", "Film", "WrittenWork"]
-
+        self.top_feature_words = []
     def fit(self, train_set, train_label):
         """
         :param train_set - List of list of words corresponding with each text
@@ -91,6 +91,11 @@ class TextClassifier(object):
             result.append(class_probs.index(max(class_probs)) + 1)
             if dev_label[idx] == result[idx]:
                 accuracy += 1
+        for i in range(0, self.num_class):
+            curr_dict = self.likelihood[i]
+            curr_dict = sorted(curr_dict, key=curr_dict.get, reverse=True)[:20]
+            self.top_feature_words.append(curr_dict)
+        # print(self.top_feature_words)
         accuracy /= len(x_set)
         return accuracy, result
 

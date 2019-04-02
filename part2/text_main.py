@@ -154,6 +154,7 @@ if __name__ == '__main__':
     MNB.fit(x_train, y_train)
 
     accuracy,pred = MNB.predict(x_test, y_test)
+    print("Results:", pred)
     compute_results(y_test,pred)
     class_names = np.array(["Company", "EducationalInstitution", "Artist", "Athlete", "OfficeHolder", "MeanOfTransportation", "Building", "NaturalPlace", "Village", "Animal", "Plant", "Album", "Film", "WrittenWork"])
     plot_confusion_matrix(y_test, pred, classes=class_names, normalize=True,

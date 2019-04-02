@@ -133,6 +133,7 @@ if __name__ == '__main__':
     # plot_visualization(perceptron.w[:-1,:], class_names, None)
     # # Classify the test sets. 
     # accuracy, y_pred = perceptron.test(x_test,y_test)
+    # print("Accuracy: ", accuracy)
     # # Plot confusion matrix.
     # plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
     #                   title='Confusion matrix, with normalization')

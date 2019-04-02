@@ -28,6 +28,31 @@ class MultiClassPerceptron(object):
 		"""
 
 		# YOUR CODE HERE
+		"""
+		METHOD:
+		use np.dot to find max product as prediction. check correctness of prediction
+		and update weights based on validity
+		"""
+		# list of 10 empty lists
+		all_dots = [ [], [], [], [], [], [], [], [], [], [] ]
+		image_idx = -1
+		# walk through each image in train and find max dot prod
+		for curr_image in train_set:
+			image_idx += 1
+			for i in range(10):
+				all_dots[i] = np.dot(self.w[0:784, i], curr_image)
+
+			prediction = np.argmax(all_dots)
+
+			if train_label[image_idx] != prediction:
+				# update prediction and train label
+				# bias is 1
+				self.w[784, prediction] -= 1		
+				self.w[784, train_label[image_idx]] += 1
+
+				self.w[0:784, prediction] -= curr_image
+				self.w[0:784, train_label[image_idx]] += curr_image
+
 		pass
 
 	def test(self,test_set,test_label):
@@ -47,10 +72,25 @@ class MultiClassPerceptron(object):
 		# YOUR CODE HERE
 		accuracy = 0 
 		pred_label = np.zeros((len(test_set)))
+		# list of 10 empty lists
+		all_dots = [ [], [], [], [], [], [], [], [], [], [] ]
+		image_idx = -1
+		# walk through each image in train and find max dot prod
+		for curr_image in test_set:
+			image_idx += 1
+			for i in range(10):
+				all_dots[i] = np.dot(self.w[0:784, i], curr_image)
 
-		pass
+			prediction = np.argmax(all_dots)
+			pred_label[image_idx] = prediction
+
+			if test_label[image_idx] == prediction:
+				# update accuracy
+				accuracy += 1
 		
-		return accuracy, pred_label
+		print(accuracy/len(test_label))
+		pass
+		return accuracy/len(test_label), pred_label
 
 	def save_model(self, weight_file):
 		""" Save the trained model parameters 
